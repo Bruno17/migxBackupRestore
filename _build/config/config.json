@@ -1,0 +1,8 @@
+{
+  "id":1,
+  "package":"migxBackupRestore",
+  "packageDescription":"Backup and Restore MODX - Installations (files,part or complete and db)\nBased on \nhttps:\/\/github.com\/hvoort\/MODxRevoBackup",
+  "version":"1.0.0",
+  "release":"beta1",
+  "menus":"[{\"MIGX_id\":\"1\",\"text\":\"Site Backup\",\"parent\":\"\",\"description\":\"\",\"icon\":\"\",\"menuindex\":\"\",\"params\":\"&configs=mbr_settings\",\"handler\":\"\",\"permissions\":\"\",\"action.id\":\"\",\"action.namespace\":\"\",\"action.controller\":\"\",\"action.haslayout\":\"0\",\"action.lang_topics\":\"\",\"action.assets\":\"\"}]"
+}

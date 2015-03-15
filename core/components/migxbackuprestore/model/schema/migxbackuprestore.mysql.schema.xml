@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model package="migxbackuprestore" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" phpdoc-package="" phpdoc-subpackage="" version="1.1">
+
+    <object class="mbrSetting" table="mbr_settings" extends="xPDOSimpleObject">
+    	<field key="name" dbtype="varchar" phptype="string" precision="255" null="false" default="" index="index" />
+        
+        <field key="backupdirs" dbtype="text" phptype="string" null="false" default="" />
+        <field key="backuptables" dbtype="text" phptype="string" null="false" default="" />
+        <field key="dbbackup" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        
+        <field key="createdby" dbtype="int" precision="10" phptype="integer" null="false" default="0" />	
+    	<field key="createdon" dbtype="datetime" phptype="datetime" null="false" />
+		<field key="editedby" dbtype="int" precision="10" phptype="integer" null="false" default="0" />
+		<field key="editedon" dbtype="datetime" phptype="datetime" null="false" />
+        
+    </object>
+    
+    <object class="mbrHistory" table="mbr_history" extends="xPDOSimpleObject">
+    	<field key="setting_id" dbtype="int" precision="10" phptype="integer" null="false" default="0" />
+        
+        <field key="createdby" dbtype="int" precision="10" phptype="integer" null="false" default="0" />	
+    	<field key="createdon" dbtype="datetime" phptype="datetime" null="false" />
+		<field key="editedby" dbtype="int" precision="10" phptype="integer" null="false" default="0" />
+		<field key="editedon" dbtype="datetime" phptype="datetime" null="false" />
+        
+    </object>    
+    
+
+</model>
