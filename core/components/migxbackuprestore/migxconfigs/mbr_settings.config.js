@@ -1,14 +1,14 @@
 {
-  "id":12,
+  "id":209,
   "name":"mbr_settings",
   "formtabs":[
     {
-      "MIGX_id":11,
+      "MIGX_id":91,
       "caption":"Settings",
       "print_before_tabs":"0",
       "fields":[
         {
-          "MIGX_id":30,
+          "MIGX_id":392,
           "field":"name",
           "caption":"Name",
           "description":"",
@@ -27,7 +27,7 @@
           "pos":1
         },
         {
-          "MIGX_id":34,
+          "MIGX_id":393,
           "field":"dbbackup",
           "caption":"Backup db",
           "description":"",
@@ -44,17 +44,36 @@
           "default":1,
           "useDefaultIfEmpty":"0",
           "pos":2
+        },
+        {
+          "MIGX_id":501,
+          "field":"use_drop",
+          "caption":"Drop Tables",
+          "description":"",
+          "description_is_code":"0",
+          "inputTV":"",
+          "inputTVtype":"checkbox",
+          "validation":"",
+          "configs":"",
+          "restrictive_condition":"",
+          "display":"",
+          "sourceFrom":"config",
+          "sources":"",
+          "inputOptionValues":"yes==1",
+          "default":1,
+          "useDefaultIfEmpty":"0",
+          "pos":3
         }
       ],
       "pos":1
     },
     {
-      "MIGX_id":12,
+      "MIGX_id":92,
       "caption":"backupdirs",
       "print_before_tabs":"0",
       "fields":[
         {
-          "MIGX_id":31,
+          "MIGX_id":394,
           "field":"backupdirs",
           "caption":"Backup Dirs",
           "description":"don't forget to exclude dirs like \"MODX_CORE_PATHcache\" and \"MODX_ASSETS_PATHcomponents\/phpthumbof\/cache\"\n",
@@ -74,6 +93,33 @@
         }
       ],
       "pos":2
+    },
+    {
+      "MIGX_id":130,
+      "caption":"Tables",
+      "print_before_tabs":"0",
+      "fields":[
+        {
+          "MIGX_id":502,
+          "field":"backuptables",
+          "caption":"Select Tables",
+          "description":"",
+          "description_is_code":"0",
+          "inputTV":"",
+          "inputTVtype":"checkbox",
+          "validation":"",
+          "configs":"",
+          "restrictive_condition":"",
+          "display":"",
+          "sourceFrom":"config",
+          "sources":"",
+          "inputOptionValues":"@EVAL return $modx->runSnippet('mbrBackup',array('return'=>'tables'));",
+          "default":"",
+          "useDefaultIfEmpty":"0",
+          "pos":1
+        }
+      ],
+      "pos":3
     }
   ],
   "contextmenus":"",
@@ -152,12 +198,27 @@
       "renderchunktpl":"",
       "renderoptions":"",
       "editor":""
+    },
+    {
+      "MIGX_id":3,
+      "header":"Latest File",
+      "dataIndex":"latestfile",
+      "width":40,
+      "sortable":"false",
+      "show_in_grid":1,
+      "customrenderer":"",
+      "renderer":"",
+      "clickaction":"",
+      "selectorconfig":"",
+      "renderchunktpl":"",
+      "renderoptions":"",
+      "editor":""
     }
   ],
   "createdby":1,
   "createdon":"2015-03-14 08:55:59",
   "editedby":1,
-  "editedon":"2015-03-14 17:55:34",
+  "editedon":"2015-10-12 10:28:52",
   "deleted":0,
   "deletedon":"-1-11-30 00:00:00",
   "deletedby":0,

@@ -7,7 +7,9 @@
         
         <field key="backupdirs" dbtype="text" phptype="string" null="false" default="" />
         <field key="backuptables" dbtype="text" phptype="string" null="false" default="" />
+        <field key="latestfile" dbtype="text" phptype="string" null="false" default="" />
         <field key="dbbackup" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="use_drop" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="1" />
         
         <field key="createdby" dbtype="int" precision="10" phptype="integer" null="false" default="0" />	
     	<field key="createdon" dbtype="datetime" phptype="datetime" null="false" />

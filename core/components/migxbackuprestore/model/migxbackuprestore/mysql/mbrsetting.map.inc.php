@@ -9,7 +9,9 @@ $xpdo_meta_map['mbrSetting']= array (
     'name' => '',
     'backupdirs' => '',
     'backuptables' => '',
+    'latestfile' => '',
     'dbbackup' => 0,
+    'use_drop' => 1,
     'createdby' => 0,
     'createdon' => NULL,
     'editedby' => 0,
@@ -40,6 +42,13 @@ $xpdo_meta_map['mbrSetting']= array (
       'null' => false,
       'default' => '',
     ),
+    'latestfile' => 
+    array (
+      'dbtype' => 'text',
+      'phptype' => 'string',
+      'null' => false,
+      'default' => '',
+    ),
     'dbbackup' => 
     array (
       'dbtype' => 'tinyint',
@@ -48,6 +57,15 @@ $xpdo_meta_map['mbrSetting']= array (
       'phptype' => 'integer',
       'null' => false,
       'default' => 0,
+    ),
+    'use_drop' => 
+    array (
+      'dbtype' => 'tinyint',
+      'precision' => '1',
+      'attributes' => 'unsigned',
+      'phptype' => 'integer',
+      'null' => false,
+      'default' => 1,
     ),
     'createdby' => 
     array (

@@ -43,6 +43,9 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
     $backupdirs = $modx->fromJson($settings_o->get('backupdirs'));
     $dbbackup = $settings_o->get('dbbackup');
     $name = $settings_o->get('name');
+    $use_drop = $settings_o->get('use_drop')==1 ? true : false;
+    $includeTables = $settings_o->get('backuptables');
+    $includeTables = str_replace('||',',',$includeTables);
 
     $componentsfolder = dirname(dirname(dirname(dirname(__file__))));
     $backupfolder = $componentsfolder . '/backups/';
@@ -126,18 +129,23 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
 
     if (!empty($dbbackup)) {
         // run sql dump
-        $modx->runSnippet('backup', array(
+        $modx->runSnippet('mbrBackup', array(
             'dataFolder' => $exportfolder,
             'tempFolder' => $tmpfolder,
             'createDatabase' => false,
             'writeTableFiles' => false,
-            'writeFile' => true));
+            'writeFile' => true,
+            'use_drop' => $use_drop,
+            'includeTables' => $includeTables
+            ));
 
         delTree($tmpfolder);
         addFolderToZip($exportfolder, $zip, 'export-db/', $excludeFiles);
     }
 
-
+    $settings_o->set('latestfile',$destination);
+    $settings_o->save();
+   
     return $modx->error->success('done');
 
 }
