@@ -47,6 +47,7 @@ if ($create_database === 'false') {
 
 $return = $modx->getOption('return', $scriptProperties, '');
 $outputSeparator = $modx->getOption('outputSeparator', $scriptProperties, '||');
+$custom_autoinc = $modx->getOption('custom_autoinc', $scriptProperties, 0);
 
 $db = new DBBackup($modx, array(
     'comment_prefix' => $comment_prefix,
@@ -61,7 +62,7 @@ $db = new DBBackup($modx, array(
     'create_database' => $create_database,
     'includeTables' => $includeTables,
     'excludeTables' => $excludeTables,
-
+    'custom_autoinc' => $custom_autoinc,
     ));
 
 switch ($return) {

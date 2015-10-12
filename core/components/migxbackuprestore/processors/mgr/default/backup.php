@@ -46,6 +46,7 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
     $use_drop = $settings_o->get('use_drop')==1 ? true : false;
     $includeTables = $settings_o->get('backuptables');
     $includeTables = str_replace('||',',',$includeTables);
+    $custom_autoinc = $settings_o->get('custom_autoinc');
 
     $componentsfolder = dirname(dirname(dirname(dirname(__file__))));
     $backupfolder = $componentsfolder . '/backups/';
@@ -135,8 +136,9 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
             'createDatabase' => false,
             'writeTableFiles' => false,
             'writeFile' => true,
-            'use_drop' => $use_drop,
-            'includeTables' => $includeTables
+            'useDrop' => $use_drop,
+            'includeTables' => $includeTables,
+            'custom_autoinc' => $custom_autoinc
             ));
 
         delTree($tmpfolder);

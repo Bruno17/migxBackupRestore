@@ -133,7 +133,8 @@ Class DBBackup {
                 'database' => $modx->getOption('dbname'),
                 'create_database' => false,
                 'includeTables' => null,
-                'excludeTables' => null
+                'excludeTables' => null,
+                'custom_autoinc' => null
             );
             
 
@@ -405,7 +406,7 @@ Class DBBackup {
         }
 		foreach ($this->tables as $tbl) {
 		    $table_sql = $this->config['comment_prefix'].'CREATING TABLE '.$tbl['name'].$this->config['comment_suffix'].$this->config['new_line'];
-			$table_sql .= $tbl['create'] . ";".$this->config['new_line'].$this->config['new_line'];
+			$table_sql .= $tbl['create'] .$this->config['new_line'].$this->config['new_line'];
 			$table_sql .= $this->config['comment_prefix'].'INSERTING DATA INTO '.$tbl['name'].$this->config['comment_suffix'].$this->config['new_line'];
 			
 			//$table_sql .= $this->_getData($tbl['name']).$this->config['new_line'].$this->config['new_line'].$this->config['new_line'];
@@ -501,13 +502,38 @@ Class DBBackup {
 	    // also see: http://www.sitepoint.com/forums/php-application-design-147/pdo-getcolumnmeta-bug-497257.html#post3510380
 		try {
 		    $sql = '';
-		    if ( $this->config['use_drop']) {
-                 $sql = 'DROP TABLE IF EXISTS `'.$tableName.'`;'.$this->config['new_line'].$this->config['new_line'];
-            }
+            
 			$stmt = $this->handler->query('SHOW CREATE TABLE '.$tableName);
 			$q = $stmt->fetchAll();
             // reset the auto increment?
-			$sql .= preg_replace("/AUTO_INCREMENT=[\w]*./", '', $q[0][1]);
+			$create_stmt = preg_replace("/AUTO_INCREMENT=[\w]*./", '', $q[0][1]); 
+            $restore_custom = false;
+            if($this->config['custom_autoinc'] && strstr($create_stmt,'`id`')){
+                
+                //we have a table with id - column
+                //backup and restore custom-records
+                $restore_custom = true;
+            }           
+            
+            if ($restore_custom) {
+                $sql .= str_replace('CREATE TABLE','CREATE TABLE IF NOT EXISTS',$create_stmt).';'.$this->config['new_line'].$this->config['new_line'];               
+                $sql .= 'DROP TABLE IF EXISTS `tmp_'.$tableName.'`;'.$this->config['new_line'].$this->config['new_line'];                 
+                $sql .= 'CREATE TABLE `tmp_'.$tableName.'` like `'.$tableName.'`;'.$this->config['new_line'].$this->config['new_line'];
+                $sql .= 'INSERT INTO `tmp_'.$tableName.'` SELECT * FROM `'.$tableName.'` where id >= '.$this->config['custom_autoinc'].';'.$this->config['new_line'];   
+                //only on setup?
+                $create_stmt = preg_replace("/AUTO_INCREMENT=[\w]*./", 'AUTO_INCREMENT='.$this->config['custom_autoinc'].' ', $q[0][1]);
+            }           
+            
+		    if ($restore_custom || $this->config['use_drop']) {
+                 $sql .= 'DROP TABLE IF EXISTS `'.$tableName.'`;'.$this->config['new_line'].$this->config['new_line'];
+            }
+
+			$sql .= $create_stmt.';'.$this->config['new_line'].$this->config['new_line'];
+            
+            if ($restore_custom) {
+                $sql .= 'INSERT INTO `'.$tableName.'` SELECT * FROM `tmp_'.$tableName.'`;'.$this->config['new_line'];   
+            }            
+            
 			return $sql;
 		} catch (PDOException $e){
 			$this->handler = null;
