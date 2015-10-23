@@ -1,3 +1,31 @@
 [
-  
+  {
+    "id":50,
+    "source":0,
+    "property_preprocess":false,
+    "name":"mbr_prepareDownload",
+    "description":"",
+    "editor_type":0,
+    "category":0,
+    "cache_type":0,
+    "locked":false,
+    "properties":null,
+    "disabled":false,
+    "moduleguid":"",
+    "static":false,
+    "static_file":"",
+    "plugin_events":[
+      {
+        "pluginid":"mbr_prepareDownload",
+        "event":"OnLoadWebDocument",
+        "priority":0,
+        "propertyset":0,
+        "name":"OnLoadWebDocument",
+        "service":5,
+        "groupname":"System"
+      }
+    ],
+    "filename":"mbr_preparedownload.plugin.php",
+    "category_name":"migxBackupRestore"
+  }
 ]

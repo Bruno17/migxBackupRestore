@@ -63,6 +63,25 @@
           "default":1,
           "useDefaultIfEmpty":"0",
           "pos":3
+        },
+        {
+          "MIGX_id":503,
+          "field":"custom_autoinc",
+          "caption":"Custom Autoinc",
+          "description":"Sets a custom-autoinc on all tables with an autoinc-id - column. This doesn't override records at that tables, created by the customer. Suggested Value: 100000 ",
+          "description_is_code":"0",
+          "inputTV":"",
+          "inputTVtype":"",
+          "validation":"",
+          "configs":"",
+          "restrictive_condition":"",
+          "display":"",
+          "sourceFrom":"config",
+          "sources":"",
+          "inputOptionValues":"",
+          "default":"",
+          "useDefaultIfEmpty":"0",
+          "pos":4
         }
       ],
       "pos":1
@@ -218,7 +237,7 @@
   "createdby":1,
   "createdon":"2015-03-14 08:55:59",
   "editedby":1,
-  "editedon":"2015-10-12 10:28:52",
+  "editedon":"2015-10-12 14:40:22",
   "deleted":0,
   "deletedon":"-1-11-30 00:00:00",
   "deletedby":0,

@@ -1,0 +1,319 @@
+[[!mbrPrepareClientInstaller]]   
+<?php
+
+/**
+ *
+ * Usage: see readme.txt
+ *
+ * Add your ip to the $whitelist_addr list below
+ */
+
+$whitelist_addr = array(
+    '[[+client_ip]]',
+    "127.0.0.1",
+    "::1");
+
+ 
+$master_domain = '[[++site_url]]';
+$modx_version = '[[+modx_version]]'; 
+$client_modx_version = '[[+client_modx_version]]';
+$mode = '[[+mode]]';
+$restorefolder = dirname(__FILE__) . '/mbr-restore-files/';
+
+if (!in_array($_SERVER['REMOTE_ADDR'], $whitelist_addr)) {
+    header("HTTP/1.1 403 Forbidden");
+    exit;
+}
+
+@session_start();
+set_time_limit(600);
+ob_start();
+date_default_timezone_set("Europe/Amsterdam");
+
+// Define this url
+list($current_url) = explode('?', $_SERVER["REQUEST_URI"]);
+// Define action
+$action = (isset($_REQUEST['action']) ? $_REQUEST['action'] : "home");
+if (!in_array($action, array([[!getImageList? &tvname = `mbr_ClientInstallOptions` &tpl = `@CODE:'[[+name]]',`]]))){
+    return "Undefined task";    
+}
+    
+
+
+// Switch action
+switch ($action) {
+[[!getImageList?
+&tvname = `mbr_ClientInstallOptions`
+&tpl = `mbr_restoreTabContentTpl`
+]]
+}
+
+
+// functions
+
+/**
+ * ZIP
+ */
+
+function my_zip($destination, $excludeFiles) {
+
+    $excludeFiles = array_merge($excludeFiles, array($destination));
+
+    if (!extension_loaded('zip')) {
+        return false;
+    }
+
+    $zip = new ZipArchive();
+    if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+        return false;
+    }
+
+    addFolderToZip("./", $zip, '', $excludeFiles);
+}
+
+// Function to recursively add a directory,
+// sub-directories and files to a zip archive
+function addFolderToZip($dir, $zipArchive, $zipdir = '', $excludeFiles = array()) {
+    if (is_dir($dir) && $dh = opendir($dir)) {
+
+        //Add the directory
+        if (!empty($zipdir))
+            $zipArchive->addEmptyDir($zipdir);
+
+        // Loop through all the files
+        while (($file = readdir($dh)) !== false) {
+
+            //If it's a folder, run the function again!
+            if (!is_file($dir . $file)) {
+                // Skip parent and root directories
+                if (($file !== ".") && ($file !== "..") && !in_array($zipdir . $file, $excludeFiles)) {
+                    addFolderToZip($dir . $file . "/", $zipArchive, $zipdir . $file . "/", $excludeFiles);
+                }
+            } else {
+                // Add the files (if not excluded)
+                if (!in_array($zipdir . $file, $excludeFiles))
+                    $zipArchive->addFile($dir . $file, $zipdir . $file);
+            }
+        }
+    }
+}
+
+
+/**
+ * Unzip
+ */
+
+function my_unzip($source, $destination) {
+    $zip = new ZipArchive();
+    if ($zip->open($source) && $zip->extractTo($destination)) {
+        $zip->close();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+function delTree($dir) {
+    $files = array_diff(scandir($dir), array('.', '..'));
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+    }
+    return rmdir($dir);
+}
+
+function directoryToArray($directory, $recursive = true, $listDirs = false, $listFiles = true, $exclude = '') {
+    $arrayItems = array();
+    $skipByExclude = false;
+    $handle = opendir($directory);
+    if ($handle) {
+        while (false !== ($file = readdir($handle))) {
+            preg_match("/(^(([\.]){1,2})$|(\.(svn|git|md))|(Thumbs\.db|\.DS_STORE))$/iu", $file, $skip);
+            if ($exclude) {
+                preg_match($exclude, $file, $skipByExclude);
+            }
+            if (!$skip && !$skipByExclude) {
+                if (is_dir($directory . DIRECTORY_SEPARATOR . $file)) {
+                    if ($recursive) {
+                        $arrayItems = array_merge($arrayItems, directoryToArray($directory . DIRECTORY_SEPARATOR . $file, $recursive, $listDirs, $listFiles, $exclude));
+                    }
+                    if ($listDirs) {
+                        $file = $directory . DIRECTORY_SEPARATOR . $file;
+                        $arrayItems[] = $file;
+                    }
+                } else {
+                    if ($listFiles) {
+                        $file = $directory . DIRECTORY_SEPARATOR . $file;
+                        $arrayItems[] = $file;
+                    }
+                }
+            }
+        }
+        closedir($handle);
+    }
+    return $arrayItems;
+}
+
+function cURLcheckBasicFunctions() {
+    if (!function_exists("curl_init") && !function_exists("curl_setopt") && !function_exists("curl_exec") && !function_exists("curl_close"))
+        return false;
+    else
+        return true;
+}
+
+/*
+* Returns string status information.
+* Can be changed to int or bool return types.
+*/
+function cURLdownload($url, $file, $loginUrl = '', $loginData = '')
+{
+    if (!cURLcheckBasicFunctions())
+        return "UNAVAILABLE: cURL Basic Functions";
+    $ch = curl_init();
+    if ($ch) {
+
+        if (!empty($loginUrl)) {
+            //Set the URL to work with
+            curl_setopt($ch, CURLOPT_URL, $loginUrl);
+
+            // ENABLE HTTP POST
+            curl_setopt($ch, CURLOPT_POST, 1);
+
+            //Set the post parameters
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $loginData);
+
+            //Handle cookies for the login
+            curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
+
+            //Setting CURLOPT_RETURNTRANSFER variable to 1 will force cURL
+            //not to print out the results of its query.
+            //Instead, it will return the results as a string return value
+            //from curl_exec() instead of the usual true/false.
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            //execute the request (the login)
+            $store = curl_exec($ch);
+        }
+
+        $fp = fopen($file, "w");
+        if ($fp) {
+            if (!curl_setopt($ch, CURLOPT_URL, $url)) {
+                fclose($fp); // to match fopen()
+                curl_close($ch); // to match curl_init()
+                return "FAIL: curl_setopt(CURLOPT_URL)";
+            }
+            if (!curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true))
+                return "FAIL: curl_setopt(CURLOPT_FOLLOWLOCATION)";
+            if (!curl_setopt($ch, CURLOPT_FILE, $fp))
+                return "FAIL: curl_setopt(CURLOPT_FILE)";
+            if (!curl_setopt($ch, CURLOPT_HEADER, 0))
+                return "FAIL: curl_setopt(CURLOPT_HEADER)";
+            if (!curl_exec($ch)) {
+                if ($errno = curl_errno($ch)) {
+                    $error_message = curl_error($errno);
+                    return "FAIL: curl_exec(); cURL error ({$errno}):\n {$error_message}";
+                }
+                return "FAIL: curl_exec()";
+            }
+            curl_close($ch);
+            fclose($fp);
+            return true;
+        } else
+            return "FAIL: fopen()";
+    } else
+        return "FAIL: curl_init()";
+}
+
+function addMessage($class, $text) {
+    if (!array_key_exists("messages", $_SESSION) || !is_array($_SESSION['messages']))
+        $_SESSION['messages'] = array();
+    $_SESSION['messages'][] = array($class, $text);
+}
+
+function flushMessages() {
+    if (!array_key_exists('messages', $_SESSION))
+        return;
+    foreach ($_SESSION['messages'] as $message) {
+        list($class, $text) = $message;
+
+        echo '<div class="alert alert-' . $class . '">' . $text . '</div>';
+    }
+    echo "<hr />";
+    unset($_SESSION['messages']);
+}
+
+function redirectWithQuery($url, $query = array(), $permanent = false) {
+    return redirect($url . "?" . http_build_query($query), $permanent);
+}
+
+function redirect($url, $permanent = false) {
+    if ($permanent) {
+        header('HTTP/1.1 301 Moved Permanently');
+    }
+    header('Location: ' . $url);
+    exit();
+}
+
+function sQuote($input) {
+    return "'$input'";
+}
+
+$content = ob_get_clean();
+
+?>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="page_header">
+        [[+mode:is=`upgrade`:then=`
+        <h2>Upgrade Script</h2>
+        <h3>für das Upgrade von <em>MODX Revolution</em> und <em>Flüchtlingshelfer Portal</em></h3>        
+        `:else=`
+        <h2>Installations Script</h2>
+        <h3>für die Erstinstallation <em>MODX Revolution</em> und <em>Flüchtlingshelfer Portal</em></h3>        
+        `]] 
+
+        <?php
+
+[[!getImageList? &tvname = `mbr_ClientInstallOptions` &tpl = `@CODE:$[[+name]]class =`]] '';
+
+//$homeclass = $installmodxclass = $downloadclass = $unzipclass = $configclass = $dbimportclass = $dbimportfinishedclass = '';
+${$action . 'class'} = 'class="active"';
+
+?>
+<ul class="nav nav-pills">
+
+[[!getImageList?
+&tvname = `mbr_ClientInstallOptions`
+&tpl = `@CODE:<li <?php echo $[[+name]]class ?>><a href="?action=[[+name]]">[[+label]]</a></li>`
+&where = `{"name:=":"home"}`
+]]
+
+[[!getImageList?
+&tvname = `mbr_ClientInstallOptions`
+&tpl = `@CODE:<li <?php echo $[[+name]]class ?>><a href="?action=[[+name]]">[[+idx]]. [[+label]]</a></li>`
+&where = `{"name:!=":"home"}`
+]]
+
+
+</ul>
+</div>
+
+<hr />
+
+    <?php
+
+flushMessages();
+echo $content;
+
+?>
+</div>
+</body>
+</html>
