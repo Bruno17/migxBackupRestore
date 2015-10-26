@@ -3,6 +3,7 @@ $v = $modx->getVersionData();
 $modx_version='revo' . $modx->getOption('full_version',$v,'');
 
 $modx->setPlaceholder('modx_version',$modx_version);
+$modx->setPlaceholder('client_migxbackuprestore.masterlogindata',$modx->getOption('client_migxbackuprestore.masterlogindata'));
 
 $ip = $modx->getOption('ip',$_GET,get_client_ip());
 $modx->setPlaceholder('client_ip',$ip);

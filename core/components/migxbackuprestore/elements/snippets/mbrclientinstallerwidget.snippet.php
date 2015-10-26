@@ -1,6 +1,6 @@
 <?php
 $master_domain = $modx->getOption('migxbackuprestore.masterdomain');
-$loginData = $modx->getOption('migxbackuprestore.masterlogindata');
+$loginData = $modx->getOption('client_migxbackuprestore.masterlogindata');
 $loginUrl = $modx->getOption('migxbackuprestore.masterloginurl');
 $downloadUrl = $modx->getOption('migxbackuprestore.masterdownloadurl');
 

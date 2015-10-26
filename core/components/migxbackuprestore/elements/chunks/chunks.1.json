@@ -46,5 +46,21 @@
     "static_file":"",
     "filename":"mbr_restoredownloadcodetpl.chunk.html",
     "category_name":"migxBackupRestore"
+  },
+  {
+    "id":16,
+    "source":0,
+    "property_preprocess":false,
+    "name":"mbr_ClientInstaller",
+    "description":"",
+    "editor_type":0,
+    "category":0,
+    "cache_type":0,
+    "locked":false,
+    "properties":null,
+    "static":false,
+    "static_file":"",
+    "filename":"mbr_clientinstaller.chunk.html",
+    "category_name":"migxBackupRestore"
   }
 ]

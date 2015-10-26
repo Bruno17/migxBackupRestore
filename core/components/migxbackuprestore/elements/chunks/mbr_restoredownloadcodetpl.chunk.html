@@ -1,1 +1,5 @@
-$res = cURLdownload("[[~[[++migxbackuprestore.zip_resource_id]]:replace=`&amp;==&`? &scheme=`full` &download_id=`[[+id]]`]]",$restorefolder."[[+name]].zip","[[++migxbackuprestore.masterloginurl]]","[[++migxbackuprestore.masterlogindata]]");
+$res = cURLdownload("[[!~[[++migxbackuprestore.zip_resource_id]]:replace=`&amp;==&`? &scheme=`full` &download_id=`[[+id]]`]]",$restorefolder."[[+name]].zip","[[++migxbackuprestore.masterloginurl]]","[[++client_migxbackuprestore.masterlogindata]]");
+if (!file_exists($restorefolder."dbbackup.zip") || filesize($restorefolder."dbbackup.zip") == 0){
+    addMessage("danger", "<p> [[+name]].zip: File could not be downloaded</p>");
+    $dl_error=true;     
+}
