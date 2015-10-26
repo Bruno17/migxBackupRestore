@@ -48,6 +48,7 @@ if ($create_database === 'false') {
 $return = $modx->getOption('return', $scriptProperties, '');
 $outputSeparator = $modx->getOption('outputSeparator', $scriptProperties, '||');
 $custom_autoinc = $modx->getOption('custom_autoinc', $scriptProperties, 0);
+$filename = $modx->getOption('filename', $scriptProperties, 'complete_db_backup.sql');
 
 $db = new DBBackup($modx, array(
     'comment_prefix' => $comment_prefix,
@@ -63,6 +64,7 @@ $db = new DBBackup($modx, array(
     'includeTables' => $includeTables,
     'excludeTables' => $excludeTables,
     'custom_autoinc' => $custom_autoinc,
+    'filename' => $filename,
     ));
 
 switch ($return) {
@@ -76,7 +78,12 @@ switch ($return) {
     default:
         $backup = $db->backup();
         if ($backup) {
-            $output .= 'The MODX data has been backed up';
+            if ($return == 'folder' && $folder = $db->folderPath() ){
+                $output = $folder;
+            }else{
+                $output .= 'The MODX data has been backed up';  
+            }
+            
         } else {
             $output .= 'An error has ocurred and MODX did not get backed up correctly: ' . $db->getErrors();
         }

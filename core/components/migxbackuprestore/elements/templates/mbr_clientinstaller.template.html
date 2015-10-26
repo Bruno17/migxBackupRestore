@@ -1,5 +1,6 @@
-[[!mbrPrepareClientInstaller]]   
 <?php
+
+[[!mbrPrepareClientInstaller]] 
 
 /**
  *
@@ -45,6 +46,7 @@ switch ($action) {
 [[!getImageList?
 &tvname = `mbr_ClientInstallOptions`
 &tpl = `mbr_restoreTabContentTpl`
+&processTVs=`0`
 ]]
 }
 
@@ -208,9 +210,12 @@ function cURLdownload($url, $file, $loginUrl = '', $loginData = '')
                 return "FAIL: curl_setopt(CURLOPT_FILE)";
             if (!curl_setopt($ch, CURLOPT_HEADER, 0))
                 return "FAIL: curl_setopt(CURLOPT_HEADER)";
+            curl_setopt($ch, CURLOPT_FAILONERROR, true);
+            //curl_setopt($ch, CURLOPT_NOBODY, true);               
+            
             if (!curl_exec($ch)) {
                 if ($errno = curl_errno($ch)) {
-                    $error_message = curl_error($errno);
+                    $error_message = curl_error($ch);
                     return "FAIL: curl_exec(); cURL error ({$errno}):\n {$error_message}";
                 }
                 return "FAIL: curl_exec()";

@@ -31,7 +31,7 @@ function my_zip($destination, $excludeFiles) {
 
 // Function to recursively add a directory,
 // sub-directories and files to a zip archive
-function addFolderToZip($dir, &$zipArchive, $zipdir = '', $excludeFiles = array(), $dirconstants=array(), $specialdirs=array()) {
+function addFolderToZip($dir, &$zipArchive, $zipdir = '', $excludeFiles = array(), $dirconstants=array(), $specialdirs=array(), $recursive=true) {
     if (is_dir($dir) && $dh = opendir($dir)) {
 
         if (in_array($dir, $specialdirs)) {
@@ -63,8 +63,9 @@ function addFolderToZip($dir, &$zipArchive, $zipdir = '', $excludeFiles = array(
 
             //If it's a folder, run the function again!
             if (is_dir($dir . $file)) {
-
-                addFolderToZip($dir . $file . "/", $zipArchive, $zipdir . $file . "/", $excludeFiles, $dirconstants, $specialdirs);
+                if ($recursive){
+                    addFolderToZip($dir . $file . "/", $zipArchive, $zipdir . $file . "/", $excludeFiles, $dirconstants, $specialdirs);                    
+                }
             } else {
                 // Add the files (if not excluded)
                 $zipArchive->addFile($dir . $file, $zipdir . $file);

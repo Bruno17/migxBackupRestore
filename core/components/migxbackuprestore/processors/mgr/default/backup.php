@@ -49,7 +49,10 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
     $custom_autoinc = $settings_o->get('custom_autoinc');
 
     $componentsfolder = dirname(dirname(dirname(dirname(__file__))));
-    $backupfolder = $componentsfolder . '/backups/';
+    //$backupfolder = $componentsfolder . '/backups/';
+    $backupfoldername = 'mbr-backup-files/';
+    $restorefoldername = 'mbr-restore-files/';
+    $backupfolder = $modx->getOption('base_path') . $backupfoldername;
     $exportfolder = $backupfolder . date("Ymd-His") . '-export-db/';
     $zipfolder = $backupfolder . 'export-files/';
 
@@ -111,7 +114,8 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
         foreach ($backupdirs as $backupdir) {
             $mode = $modx->getOption('mode', $backupdir, '');
             $dir = $modx->getOption('dir', $backupdir, '');
-            $dir = str_replace($search, $replace, $dir . '/');
+            $dir = str_replace($search, $replace, $dir);
+            $dir = is_dir($dir) ? $dir . '/' : $dir;
             if ($mode == 'exclude') {
                 $excludeFiles[] = $dir;
             }
@@ -121,16 +125,18 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
             $mode = $modx->getOption('mode', $backupdir, '');
             $dir = $modx->getOption('dir', $backupdir, '');
             $zipdir = $modx->getOption('zipdir', $backupdir, '');
+            $recursive = $modx->getOption('recursive', $backupdir, '1');
+            $recursive = empty($recursive) ? false : true;
             $dir = str_replace($search, $replace, $dir . '/');
             if ($mode == 'include') {
-                addFolderToZip($dir, $zip, $zipdir, $excludeFiles, $dirconstants, $specialdirs);
+                addFolderToZip($dir, $zip, $zipdir, $excludeFiles, $dirconstants, $specialdirs, $recursive);
             }
         }
     }
 
     if (!empty($dbbackup)) {
         // run sql dump
-        $modx->runSnippet('mbrBackup', array(
+        $folder = $modx->runSnippet('mbrBackup', array(
             'dataFolder' => $exportfolder,
             'tempFolder' => $tmpfolder,
             'createDatabase' => false,
@@ -138,11 +144,14 @@ if ($settings_o = $modx->getObject($classname, $scriptProperties['object_id'])) 
             'writeFile' => true,
             'useDrop' => $use_drop,
             'includeTables' => $includeTables,
-            'custom_autoinc' => $custom_autoinc
+            'custom_autoinc' => $custom_autoinc,
+            'filename' => $name . '.sql',
+            'return' => 'folder',
             ));
-
+ 
+       
         delTree($tmpfolder);
-        addFolderToZip($exportfolder, $zip, 'export-db/', $excludeFiles);
+        addFolderToZip($folder, $zip, $restorefoldername . 'db/', $excludeFiles);
     }
 
     $settings_o->set('latestfile',$destination);

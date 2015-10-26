@@ -134,7 +134,8 @@ Class DBBackup {
                 'create_database' => false,
                 'includeTables' => null,
                 'excludeTables' => null,
-                'custom_autoinc' => null
+                'custom_autoinc' => null,
+                'filename' => 'complete_db_backup.sql'
             );
             
 
@@ -384,6 +385,7 @@ Class DBBackup {
 	 * @uses Private use
 	 */
 	protected function _generate(){
+	   $filename = isset($this->config['filename']) ? $this->config['filename'] : '';
 	    if ( $this->config['create_database'] ) {
 	        $this->final = $this->config['comment_prefix'].'CREATING DATABASE '.$this->dbName.' '.$this->config['comment_suffix'].$this->config['new_line'];
             $this->final .= 'CREATE DATABASE ' . $this->dbName.";".$this->config['new_line'];
@@ -401,8 +403,8 @@ Class DBBackup {
         }
         // start the large SQL dump file:
         if ( $this->config['write_file'] ) {
-            file_put_contents($dir.'complete_db_backup.sql', $this->final );
-            $this->filePathData['database'] = $dir.'complete_db_backup.sql';
+            file_put_contents($dir.$filename, $this->final );
+            $this->filePathData['database'] = $dir.$filename;
         }
 		foreach ($this->tables as $tbl) {
 		    $table_sql = $this->config['comment_prefix'].'CREATING TABLE '.$tbl['name'].$this->config['comment_suffix'].$this->config['new_line'];
@@ -427,13 +429,13 @@ Class DBBackup {
             // added 1.1.6:
             if ( $this->config['write_file'] ) {
                 file_put_contents(
-                    $dir.'complete_db_backup.sql', 
+                    $dir.$filename, 
                     $table_sql,
                     FILE_APPEND
                 );
                 // copy file into file:
                 file_put_contents(
-                    $dir.'complete_db_backup.sql',
+                    $dir.$filename,
                     $data,
                     FILE_APPEND
                 );
@@ -446,11 +448,11 @@ Class DBBackup {
 		//$this->final .= $this->config['comment_prefix'].' THE END'.$this->config['new_line'].$this->config['comment_suffix'].$this->config['new_line'];
         if ( $this->config['write_file'] ) {
             file_put_contents(
-                $dir.'complete_db_backup.sql', 
+                $dir.$filename, 
     	        $this->config['comment_prefix'].' THE END'.$this->config['new_line'].$this->config['comment_suffix'].$this->config['new_line'],
     	        FILE_APPEND
             );
-            $this->filePathData['database'] = $dir.'complete_db_backup.sql';
+            $this->filePathData['database'] = $dir.$filename;
 	    }
 	}
 	/**

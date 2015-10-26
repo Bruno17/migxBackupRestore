@@ -63,6 +63,25 @@
           "default":"include",
           "useDefaultIfEmpty":"0",
           "pos":3
+        },
+        {
+          "MIGX_id":531,
+          "field":"recursive",
+          "caption":"Recursive",
+          "description":"Add all Subfolders recursively?",
+          "description_is_code":"0",
+          "inputTV":"",
+          "inputTVtype":"listbox",
+          "validation":"",
+          "configs":"",
+          "restrictive_condition":"",
+          "display":"",
+          "sourceFrom":"config",
+          "sources":"",
+          "inputOptionValues":"yes==1||no==0",
+          "default":1,
+          "useDefaultIfEmpty":"0",
+          "pos":4
         }
       ],
       "pos":1
@@ -149,7 +168,7 @@
   "createdby":1,
   "createdon":"2015-03-14 09:05:02",
   "editedby":1,
-  "editedon":"2015-03-14 13:16:18",
+  "editedon":"2015-10-25 09:20:34",
   "deleted":0,
   "deletedon":"-1-11-30 00:00:00",
   "deletedby":0,
